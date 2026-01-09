@@ -1,22 +1,44 @@
-import React, { useState } from "react";
-import { SaveMeta } from "../types/types";
+import React, { useEffect, useState } from "react";
+import { QRJob, SaveMeta } from "../types/types";
 
 type ModalProps = {
   setter: React.Dispatch<React.SetStateAction<boolean>>;
-  onSave: (meta: SaveMeta) => void;
+  pdfUrl: string | null;
+  onSaveComplete: () => void;
+  setJobs: React.Dispatch<React.SetStateAction<QRJob[]>>;
 };
 
-const Modal = ({ setter , onSave}: ModalProps) => {
+const Modal = ({ setter, pdfUrl, onSaveComplete, setJobs}: ModalProps) => {
   const [saveMeta, setSaveMeta] = useState<SaveMeta>({
     personName: "",
     purpose: "",
     companyName: "",
   });
 
-  const handleMetaSave = () => {
-    onSave(saveMeta);
+  const handleSaveMeta = (meta: SaveMeta) => {
+    if (!pdfUrl) return;
+
+    const newJob: QRJob = {
+      id: crypto.randomUUID(),
+      pdfUrl,
+      ...meta,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+    };
+
+    setJobs((prev) => {
+      const updated = [newJob, ...prev];
+      localStorage.setItem("qr_jobs", JSON.stringify(updated));
+      return updated;
+    });
+    
     setter(false);
+    onSaveComplete();
   };
+
+  useEffect(() => {
+    console.log("Updated Metadata:", saveMeta);
+  }, [saveMeta]);
 
   return (
     <>
@@ -72,7 +94,8 @@ const Modal = ({ setter , onSave}: ModalProps) => {
             </button>
 
             <button
-              onClick={handleMetaSave}
+              type="button"
+              onClick={() => handleSaveMeta(saveMeta)}
               className="bg-green-600 text-white px-8 py-2 rounded-md"
             >
               Save
