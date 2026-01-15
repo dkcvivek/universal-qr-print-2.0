@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import SingleQR from "./components/SingleQR";
 import { QRFormData, QRJob } from "./types/types";
 import BulkQR from "./components/BulkQR";
+import Link from "next/link";
 
 export const Home = () => {
   const [formData, setFormData] = useState<QRFormData>({
@@ -130,6 +131,12 @@ export const Home = () => {
                   </div>
                 </div>
               )}
+
+              <div className="flex justify-center mt-12">
+                <Link href={"/create-template"} className="bg-blue-600 px-8 py-3 text-white rounded-md">
+                  Create Template
+                </Link>
+              </div>
             </div>
           </div>
         </>

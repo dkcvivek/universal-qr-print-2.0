@@ -1,0 +1,1 @@
+export const mmToPx = (mm: number) => (mm * 96) / 25.4;
